@@ -13,14 +13,14 @@
 - Clone the repository.
   - `git clone https://github.com/choshina/coverage-confidence.git`
 
-- Install [Breach](https://github.com/decyphir/breach). **(No need to install Breach if computing confidence only)**
+- Install [Breach](https://github.com/decyphir/breach). *(Optional)*
   1. `git submodule init` and `git submodule update`
   1. start matlab, set up a C/C++ compiler using the command `mex -setup`. (Refer to [here](https://www.mathworks.com/help/matlab/matlab_external/changing-default-compiler.html) for more details.)
   2. navigate to `breach/` in Matlab commandline, and run `InstallBreach`
 
 ## Usage
 
-### Generate test suite 
+### Generate test suite *(Optional)*
 - navigate to `test/`
 - write a configuration file and put it in `config/`. 
 - generate executable file by running `python [Alg]_test.py [config]`
@@ -35,7 +35,7 @@
 
 ## Configuration File
 
-### For test suite
+### For test suite *(Optional)*
 ...
 ### For coverage computation
 ```
