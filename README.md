@@ -31,6 +31,7 @@
 - you can manually put the test suites in `test/log/...`
 - navigate to `test/`, and write a configuration file in `test/config/coverage/`.
 - run `python compute_cov.py [config]`. An executable file will be generated in `test/cov/`.
+  - Mind the matlab path in Line 36: `matlab_path = 'matlab'`  If you cannot use `matlab` in commandline, you should change the value of `matlab_path` to the matlab executable, which is usually found in `bin/` of matlab home.
 - navigate to project home, and run `./test/cov/[exe]`. The results will be generated in `result/` as a csv file.
 
 ## Configuration File
