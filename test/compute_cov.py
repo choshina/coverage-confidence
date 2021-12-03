@@ -153,3 +153,5 @@ with open(covfilename,'w') as bm:
 	bm.write('writetable(result, \'results/'+ model + sys_time + '.csv\', \'Delimiter\',\';\')\n')
 	bm.write('quit\n')
 	bm.write('EOF\n')
+
+os.system('chmod 777 ' + covfilename)
