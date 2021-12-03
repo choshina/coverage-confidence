@@ -47,9 +47,9 @@ input_range 2          #don't modify this because order matters.
 0 100 
 controlpoints 1        
 3
-base 1                 #weight function, you can indicate many
+base 1                 #weight function parameter.You can test many: write them in the following multiple lines, and write how many lines in this line.
 30
-bound 5                #size of test suites, you can indicate many
+bound 5                #size of test suites. You can test many: similarly to "base"
 400
 800
 1200
