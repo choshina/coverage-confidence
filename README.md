@@ -31,6 +31,7 @@
 - you can manually put the test suites in `test/log/...`
 - navigate to `test/`, and write a configuration file in `test/config/coverage/`.
 - run `python compute_cov.py [config]`. An executable file will be generated in `test/cov/`.
+  - Mind the matlab path in Line 36: `matlab_path = 'matlab'`  If you cannot use `matlab` in commandline, you should change the value of `matlab_path` to the matlab executable, which is usually found in `bin/` of matlab home.
 - navigate to project home, and run `./test/cov/[exe]`. The results will be generated in `result/` as a csv file.
 
 ## Configuration File
@@ -46,9 +47,9 @@ input_range 2          #don't modify this because order matters.
 0 100 
 controlpoints 1        
 3
-base 1                 #weight function, you can indicate many
+base 1                 #weight function parameter.You can test many: write them in the following multiple lines, and write how many lines in this line.
 30
-bound 5                #size of test suites, you can indicate many
+bound 5                #size of test suites. You can test many: similarly to "base"
 400
 800
 1200
