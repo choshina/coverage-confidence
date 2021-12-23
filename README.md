@@ -1,4 +1,4 @@
-# coverage-confidence
+# A Robustness-based Confidence Measure for Hybrid System Falsification
 
 ## System requirement
 
