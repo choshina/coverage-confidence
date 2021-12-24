@@ -45,44 +45,24 @@ classdef Coverage < handle
         function partition(this, par)
             s_head = par.getHead();
             if isempty(s_head)
-                
-                
                 return
-            else
-                
+            else             
                 w = this.weightFunction(s_head.robustness);
-                
-                
-
                 if w > par.level  %is this true?
                     p_local = [];   %p_local includes the partitions at the same level
-                    %step_i = (par.range(1,2)-par.range(1,1))/2.0;
-                    %step_j = (par.range(2,2)-par.range(2,1))/2.0;
-                    %steps = [];
-                    %[~, dim] = size(par.range);
-                    %for d = 1:dim
-                    %    ss = (par.range(d, 2) - par.range(d, 1))/2.0;
-                    %    steps = [steps ss];
-                    %end
-                    
-                   %for idx_i = [0 1]
-                        %for idx_j = [0 1]
-                    %for idx = 1:2^dim
+
                     rg_set = par.range.split_comp();
-                        %new_range = [par.range(1,1)+step_i*idx_i par.range(1,1)+step_i*(idx_i+1); par.range(2,1)+step_j*idx_j par.range(2,1)+step_j*(idx_j+1)];
                     for rg = rg_set    
                         new_ps = [];
                         for p = par.point_set
-                            if rg.check_point(p)
+                            if rg.check_point(p, this.p_root.range.range(:, 2))
                                 new_ps = [new_ps p];
                             end
                         end
                         p_new = Partition(rg, par.level + 1, new_ps);
+                        p_new
                         p_local = [p_local p_new];
                     end
-                    %end
-                        %end
-                    %end
 
                     for p = p_local
                         this.partition(p);
@@ -92,14 +72,6 @@ classdef Coverage < handle
                 end
             end
         end
-        
-        %function in = check_ptin(this, p, r)
-        %    in = false;
-        %    if p.x_1>=r(1,1) && p.x_1<=r(1,2) && p.x_2 >= r(2,1) && p.x_2<=r(2,2)
-        %        in = true; 
-        %    end
-        %end
-        
         
         
         function cov = computeCoverage(this)

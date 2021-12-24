@@ -38,11 +38,19 @@ classdef Range < handle
             end
         end
         
-        function in = check_point(this, p)
+        function in = check_point(this, p, most_ub)
             in = true;
             for i = 1:this.dim
-               if  p.x(i)< this.range(i,1) || p.x(i)> this.range(i, 2)
-                   in = false;
+               if  this.range(i,2) == most_ub(i)
+                    if p.x(i) < this.range(i,1) 
+                        in = false;
+                        break;
+                    end
+               else
+                    if p.x(i) < this.range(i,1) || p.x(i) >= this.range(i, 2)
+                        in = false;
+                        break;
+                    end
                end
             end
         end
