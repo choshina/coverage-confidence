@@ -1,3 +1,7 @@
+#!/bin/sh
+csv=$1
+/home/zhenya/tools/matlab/bin/matlab -nodesktop -nosplash <<EOF
+
 %configuration
 confs = ['AT1', 'AT3', 'AT4', 'AT5', 'AT6', 'AT7', 'AFC1', 'AFC2', 'NN1', 'FFR1'];
 
@@ -236,4 +240,5 @@ function mdl = get_model(str)
 end
 
 
-
+quit
+EOF
