@@ -1,0 +1,239 @@
+%configuration
+confs = ['AT1', 'AT3', 'AT4', 'AT5', 'AT6', 'AT7', 'AFC1', 'AFC2', 'NN1', 'FFR1'];
+
+for config = confs
+%config = 'NN1';
+go_on = true;
+
+for which = 1:5
+    model = get_model(config);
+    logfile = strcat('log_falable/', config, 'R/', model ,'_random_', config, '_3_2000_', int2str(which) ,'.mat');
+    
+    %load a log
+    load(logfile, 'log');
+    
+    %understand which is the lowest rob, and the location in the log.
+    [min_fal, loc] = min(log.obj_log);
+
+    if go_on == false
+        min_fal
+        loc
+        continue
+    end
+    
+    if strcmp(model, 'Autotrans_shift')
+        if endsWith(config, '1')
+            spec = 'alw_[0,30] (speed[t] < 135)';
+        elseif endsWith(config, '3')
+            spec = 'alw_[0,29](speed[t]<100) or alw_[29,30](speed[t]>69)';
+        elseif endsWith(config, '4')
+            spec = 'alw_[0,30](RPM[t] < 4770 or alw_[0,1](RPM[t] > 950))';
+        elseif endsWith(config, '5')
+            spec = 'alw_[0,30]((gear[t] == 3 => speed[t] > 19.8))';
+        elseif endsWith(config, '6')
+            spec = 'alw_[0,30](speed[t]<135 and RPM[t] < 4800)';
+        elseif endsWith(config, '7')
+            spec = 'alw_[0,26](speed[t+4]-speed[t]>54.5 => gear[t+4]-gear[t]>0)';
+        end
+        
+        rob2 = [];
+        phi = STL_Formula('phi', spec);
+        Br = BreachSimulinkSystem(model);
+    
+        input_gen.type = 'UniStep';
+        input_gen.cp = 3;
+        Br.SetInputGen(input_gen);
+    
+        for i = 1:numel(log.obj_log)
+        %for i = 1:10
+            i
+            u = log.X_log(:, i);
+            
+            for cpi = 0:input_gen.cp-1
+                brake_sig = strcat('brake_u', num2str(cpi));
+                throttle_sig = strcat('throttle_u', num2str(cpi));
+        
+                Br.SetParam({brake_sig},u(cpi+1));
+                Br.SetParam({throttle_sig},u(cpi + 1+ input_gen.cp));
+            end
+    
+            Br.Sim(0:.01:30);
+            r = Br.CheckSpec(phi);
+            if r<0
+                config
+                which
+                r
+                r = -r;
+            end
+            rob2 = [rob2 r];
+        end
+    
+        log.falable_obj = rob2;
+        save(logfile, 'log');
+    
+    elseif strcmp(model, 'fuel_control')
+        if endsWith(config, '1')
+            spec = 'alw_[11,50]((controller_mode[t] == 0) => (mu[t]<0.15))';
+        elseif endsWith(config, '2')
+            spec = 'not (ev_[11,50] (alw_[0,10] ((mu[t]>0.3) or (mu[t]<-0.3))))';
+        end
+        
+        rob2 = [];
+        phi = STL_Formula('phi', spec);
+
+        fuel_inj_tol=1.0;
+        MAF_sensor_tol=1.0;
+        AF_sensor_tol=1.0;
+        pump_tol=1;
+        kappa_tol=1;
+        tau_ww_tol=1;
+        fault_time=50;
+        kp=0.04;
+        ki=0.14;
+
+        Br = BreachSimulinkSystem(model);
+    
+        input_gen.type = 'UniStep';
+        input_gen.cp = 3;
+        Br.SetInputGen(input_gen);
+    
+        for i = 1:numel(log.obj_log)
+        %for i = 1:10
+            i
+            u = log.X_log(:, i);
+            
+            for cpi = 0:input_gen.cp-1
+                PA_sig = strcat('Pedal_Angle_u', num2str(cpi));
+                ES_sig = strcat('Engine_Speed_u', num2str(cpi));
+        
+                Br.SetParam({PA_sig},u(cpi+1));
+                Br.SetParam({ES_sig},u(cpi + 1+ input_gen.cp));
+            end
+    
+            Br.Sim(0:.01:50);
+            r = Br.CheckSpec(phi);
+            if r<0
+                config
+                which
+                r
+                r = -r;
+            end
+            rob2 = [rob2 r];
+        end
+    
+        log.falable_obj = rob2;
+        save(logfile, 'log');
+    
+    elseif strcmp(model, 'narmamaglev_v1')
+        if endsWith(config, '1')
+            spec = 'alw_[0, 18]((not (abs(Pos[t] - Ref[t]) <= 0.0169+ 0.06*abs(Ref[t])))=> ev_[0, 2] (alw_[0, 1] (abs(Pos[t] - Ref[t]) <= 0.0169+ 0.06*abs(Ref[t]))))';
+        end
+        
+        rob2 = [];
+        phi = STL_Formula('phi', spec);
+
+        u_ts=0.001;
+
+        Br = BreachSimulinkSystem(model);
+    
+        input_gen.type = 'UniStep';
+        input_gen.cp = 3;
+        Br.SetInputGen(input_gen);
+    
+        for i = 1:numel(log.obj_log)
+        %for i = 1:10
+            i
+            u = log.X_log(:, i);
+            
+            for cpi = 0:input_gen.cp-1
+                ref_sig = strcat('Ref_u', num2str(cpi));
+        
+                Br.SetParam({ref_sig},u(cpi+1));
+            end
+    
+            Br.Sim(0:.01:20);
+            r = Br.CheckSpec(phi);
+            if r<0
+                config
+                which
+                r
+                r = -r;
+            end
+            rob2 = [rob2 r];
+        end
+    
+        log.falable_obj = rob2;
+        save(logfile, 'log');
+    
+    elseif strcmp(model, 'free_floating_robot')
+    
+        if endsWith(config, '1')
+            spec = 'not ev_[0,5](x1[t] >=3.9 and x1[t] <=4.1 and x2[t] >=-0.5 and x2[t] <= 0.5 and x3[t] >=3.9 and x3[t]<4.1  and x4[t] >= -0.5 and x4[t] <=0.5)';
+        end
+        
+        rob2 = [];
+        phi = STL_Formula('phi', spec);
+        Br = BreachSimulinkSystem(model);
+    
+        input_gen.type = 'UniStep';
+        input_gen.cp = 3;
+        Br.SetInputGen(input_gen);
+    
+        for i = 1:numel(log.obj_log)
+        %for i = 1:10
+            i
+            u = log.X_log(:, i);
+            
+            for cpi = 0:input_gen.cp-1
+                u1_sig = strcat('u1_u', num2str(cpi));
+                u2_sig = strcat('u2_u', num2str(cpi));
+                u3_sig = strcat('u3_u', num2str(cpi));
+                u4_sig = strcat('u4_u', num2str(cpi));
+        
+                Br.SetParam({u1_sig},u(cpi+1));
+                Br.SetParam({u2_sig},u(cpi + 1+ input_gen.cp));
+                Br.SetParam({u2_sig},u(cpi + 1+ 2*input_gen.cp));
+                Br.SetParam({u2_sig},u(cpi + 1+ 3*input_gen.cp));
+            end
+    
+            Br.Sim(0:.01:5);
+            r = Br.CheckSpec(phi);
+            if r<0
+                config
+                which
+                r
+                r = -r;
+            end
+            rob2 = [rob2 r];
+        end
+    
+        log.falable_obj = rob2;
+        save(logfile, 'log');
+    end
+
+end
+
+end
+%
+%
+
+%
+%
+
+
+
+
+function mdl = get_model(str)
+   if startsWith(str, 'AT')
+        mdl = 'Autotrans_shift';
+   elseif startsWith(str, 'AFC')
+        mdl = 'fuel_control';
+   elseif startsWith(str, 'NN')
+        mdl = 'narmamaglev_v1';
+   elseif startsWith(str, 'FFR')
+        mdl = 'free_floating_robot';
+   end
+end
+
+
+
