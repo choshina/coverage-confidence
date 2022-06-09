@@ -2,14 +2,8 @@
 csv=$1
 matlab -nodesktop -nosplash <<EOF
 clear;
-brpath_i = which('InitBreach');
-while ~isempty(brpath_i)
-	brpath = replace(brpath_i, 'InitBreach.m','');
-	rmpath(brpath);
-	brpath_i = which('InitBreach');
-end
-addpath(genpath('.'));
-addpath(genpath('/home/zhenya/breach/'));
+addpath(genpath('/home/zhenya/git/coverage-confidence/'));
+addpath(genpath('/home/zhenya/tools/breach/'));
 InitBreach;
 
 warning('off', 'f16:no_analysis'); 
@@ -31,20 +25,20 @@ spec = 'alw (altitude[t]>0)';
 phi = STL_Formula('phi', spec);
 
 mdl = 'F16';
-budget = 2000;
+budget = 500;
 solver = 'cmaes';
 algorithm = 'breach';
 specID = 'F1';
 
 filename = strcat(mdl, '_', algorithm, '_', specID, '_', int2str(budget), '_', solver);
 
-trials = 30;
+trials = 5;
 min_rob = [];
 coverage = [];
 time_cov = [];
 for n = 1:trials
 	logname = strcat('test/log/', filename, '_', int2str(n));
-	log = breachSampling(B, budget, phi, controlpoints, tspan, input_name, input_range, solver);
+	log = paramBreachSampling(B, budget, phi, controlpoints, tspan, input_name, input_range, solver);
 	save(logname, 'log');
 end
 quit

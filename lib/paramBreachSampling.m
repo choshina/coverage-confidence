@@ -1,5 +1,5 @@
 %br, budget, phi, tspan, input_name, input_range, solver
-function [logs, vars, ranges] = breachSampling(br, budget, phi, tspan, input_name, input_range, solver)
+function [logs, vars, ranges] = paramBreachSampling(br, budget, phi, tspan, input_name, input_range, solver)
 
     br.Sys.tspan = tspan;
 
@@ -11,7 +11,7 @@ function [logs, vars, ranges] = breachSampling(br, budget, phi, tspan, input_nam
     
  %   for i = 1:cp
         for j = 1:dim
-            br.SetParamRanges({strcat(input_name(j),'_u',num2str(i-1))}, input_range(j, :));
+            br.SetParamRanges({input_name(j)}, input_range(j, :));
             
         end
  %   end

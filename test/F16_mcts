@@ -1,0 +1,44 @@
+#!/bin/sh
+csv=$1
+matlab -nodesktop -nosplash <<EOF
+clear;
+addpath(genpath('/home/zhenya/breach'));
+addpath(genpath('.'));
+InitBreach;
+
+warning('off', 'f16:no_analysis');
+
+sg = f16_signal_gen();
+B = BreachSignalGen(sg);
+
+N_max =500;
+scalar = 0.2;
+
+phi_str = 'alw_[0,15](altitude[t]>0)';
+phi = STL_Formula('phi1',phi_str);
+
+T = 15;
+controlpoints = 1;
+hill_climbing_by = 'cmaes';
+T_playout = 20;
+input_name = {'phig', 'thetag', 'psig'};
+input_range = [[pi/4-pi/20 pi/4+pi/30];[-0.8*pi/2 -pi/2*0.8+pi/20];[-pi/4-pi/8 -pi/4+pi/8]];
+
+partitions = [2 2 2];
+filename = 'F16_mcts_F1_1_500_20_cmaes';
+algorithm = 'mctsbasic';
+
+falsified_at_all = [];
+min_rob = [];
+coverage = [];
+time_cov = [];
+trials =5;
+
+for i = 1:trials
+	m = MCTS(B, N_max, scalar, phi, T, controlpoints, hill_climbing_by, T_playout, input_name, input_range, partitions);
+	log = m.log;
+	logname = strcat('test/log/F16_mcts_F1_1_500_20_cmaes_', int2str(i));
+	save(logname, 'log');
+end
+quit
+EOF

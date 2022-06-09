@@ -2,14 +2,9 @@
 csv=$1
 matlab -nodesktop -nosplash <<EOF
 clear;
-brpath_i = which('InitBreach');
-while ~isempty(brpath_i)
-	brpath = replace(brpath_i, 'InitBreach.m','');
-	rmpath(brpath);
-	brpath_i = which('InitBreach');
-end
-addpath(genpath('.'));
-addpath(genpath('/home/zhenya/breach/'));
+rmpath(genpath('/Users/zhenya/git/monitor_breach'));
+addpath(genpath('/Users/zhenya/git/coverage-confidence/'));
+addpath(genpath('/Users/zhenya/tools/breach/'));
 InitBreach;
  
 warning('off', 'f16:no_analysis'); 
@@ -23,23 +18,23 @@ input_name = {'phig', 'thetag', 'psig'};
 input_range = [[pi/4-pi/20 pi/4+pi/30];[-0.8*pi/2, -pi/2*0.8+pi/20];[-pi/4-pi/8 -pi/4+pi/8]];
 B.SetParamRanges( input_name, input_range);
 
-spec = '';
+spec = 'alw_[0,15](altitude[t]>0)';
 phi = STL_Formula('phi',spec);
 
-budget = 2000;
+budget = 500;
 
 mdl = 'F16';
 specID = 'F1';
 algorithm = 'random';
 filename = strcat(mdl, '_', algorithm, '_', specID, int2str(budget));
 
-trials = 1;
+trials = 5;
 min_rob = [];
 coverage = [];
 time_cov =[];
 for n = 1:trials
 	logname = strcat('test/log/', filename, '_', int2str(n));
-	log = randomSample(B, budget, phi, controlpoints, tspan, input_name, input_range);
+	log = paramRandomSample(B, budget, phi, tspan, input_name, input_range);
 	save(logname, 'log');
 end
 quit

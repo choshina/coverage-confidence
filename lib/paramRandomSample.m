@@ -1,4 +1,4 @@
-function [logs, vars, ranges] = randomSample(br, budget, phi, tspan, input_name, input_range)
+function [logs, vars, ranges] = paramRandomSample(br, budget, phi, tspan, input_name, input_range)
     br.Sys.tspan = tspan;
 
 %    input_gen.type = 'UniStep';
@@ -27,7 +27,7 @@ function [logs, vars, ranges] = randomSample(br, budget, phi, tspan, input_name,
         
 %        for cpi = 1:cp
             for j = 1:dim
-                br.SetParam({strcat(input_name(j),'_u',num2str(cpi-1))}, x_list((j-1)*cp + cpi))
+                br.SetParam({input_name(j)}, x_list(j));
             end
 %        end
 
@@ -35,7 +35,7 @@ function [logs, vars, ranges] = randomSample(br, budget, phi, tspan, input_name,
         logs.X_log = [logs.X_log x_list'];
 
 
-        br.Sim(0:.01:30);
+        br.Sim(tspan);
         obj = br.CheckSpec(phi)
         logs.obj_log = [logs.obj_log obj];
 		vars = br.GetSysVariables();
