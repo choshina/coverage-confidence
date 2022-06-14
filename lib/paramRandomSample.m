@@ -32,12 +32,15 @@ function [logs, vars, ranges] = paramRandomSample(br, budget, phi, tspan, input_
 %        end
 
         
-        logs.X_log = [logs.X_log x_list'];
+       % logs.X_log = [logs.X_log x_list'];
 
 
         br.Sim(tspan);
         obj = br.CheckSpec(phi)
-        logs.obj_log = [logs.obj_log obj];
+		if obj > 0
+        	logs.X_log = [logs.X_log x_list'];
+        	logs.obj_log = [logs.obj_log obj];
+		end
 		vars = br.GetSysVariables();
 		ranges = br.GetParamRanges(vars);
 
