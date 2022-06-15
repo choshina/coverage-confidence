@@ -1,10 +1,12 @@
 #!/bin/sh
 csv=$1
-/home/zhenya/tools/matlab/bin/matlab -nodesktop -nosplash <<EOF
+/home/zhenya/temp/bin/matlab -nodesktop -nosplash <<EOF
 clear;
+addpath(genpath('/home/zhenya/tools/breach/'));
 addpath(genpath('/home/zhenya/git/coverage-confidence/'));
 %configuration
-confs = {'AT4','AT7'};
+%confs = {'AT1', 'AT3', 'AT4', 'AT5', 'AT6', 'AT7', 'AFC1', 'AFC2', 'NN1', 'FFR1'};
+confs= {'AFC1', 'AFC2', 'NN1', 'FFR1'};
 
 for conf = confs
 config = conf{1};
@@ -50,8 +52,8 @@ for which = 1:5
         input_gen.cp = 3;
         Br.SetInputGen(input_gen);
     
-        for i = 1:numel(log.obj_log)
-        %for i = 1:10
+        %for i = 1:numel(log.obj_log)
+        for i = 1:500
             i
             u = log.X_log(:, i);
             
@@ -69,7 +71,7 @@ for which = 1:5
                 config
                 which
                 r
-                r = -r;
+                %r = -r;
             end
             rob2 = [rob2 r];
         end
@@ -79,7 +81,7 @@ for which = 1:5
     
     elseif strcmp(model, 'fuel_control')
         if endsWith(config, '1')
-            spec = 'alw_[11,50]((controller_mode[t] == 0) => (mu[t]<0.15))';
+            spec = 'alw_[11,50]((controller_mode[t] == 0) => (mu[t]<0.17))';
         elseif endsWith(config, '2')
             spec = 'not (ev_[11,50] (alw_[0,10] ((mu[t]>0.05) or (mu[t]<-0.05))))';
         end
@@ -103,8 +105,8 @@ for which = 1:5
         input_gen.cp = 3;
         Br.SetInputGen(input_gen);
     
-        for i = 1:numel(log.obj_log)
-        %for i = 1:10
+        %for i = 1:numel(log.obj_log)
+        for i = 1:500
             i
             u = log.X_log(:, i);
             
@@ -116,13 +118,13 @@ for which = 1:5
                 Br.SetParam({ES_sig},u(cpi + 1+ input_gen.cp));
             end
     
-            Br.Sim(0:.01:50);
+            Br.Sim(0:.01:30);
             r = Br.CheckSpec(phi);
             if r<0
                 config
                 which
                 r
-                r = -r;
+                %r = -r;
             end
             rob2 = [rob2 r];
         end
@@ -132,7 +134,7 @@ for which = 1:5
     
     elseif strcmp(model, 'narmamaglev_v1')
         if endsWith(config, '1')
-            spec = 'alw_[0, 18]((not (abs(Pos[t] - Ref[t]) <= 0.004+ 0.04*abs(Ref[t])))=> ev_[0, 2] (alw_[0, 1] (abs(Pos[t] - Ref[t]) <= 0.004+ 0.04*abs(Ref[t]))))';
+            spec = 'alw_[0, 18]((not (abs(Pos[t] - Ref[t]) <= 0.007+ 0.04*abs(Ref[t])))=> ev_[0, 2] (alw_[0, 1] (abs(Pos[t] - Ref[t]) <= 0.007+ 0.04*abs(Ref[t]))))';
         end
         
         rob2 = [];
@@ -146,8 +148,8 @@ for which = 1:5
         input_gen.cp = 3;
         Br.SetInputGen(input_gen);
     
-        for i = 1:numel(log.obj_log)
-        %for i = 1:10
+        %for i = 1:numel(log.obj_log)
+        for i = 1:500
             i
             u = log.X_log(:, i);
             
@@ -157,13 +159,13 @@ for which = 1:5
                 Br.SetParam({ref_sig},u(cpi+1));
             end
     
-            Br.Sim(0:.01:20);
+            Br.Sim(0:.01:30);
             r = Br.CheckSpec(phi);
             if r<0
                 config
                 which
                 r
-                r = -r;
+                %r = -r;
             end
             rob2 = [rob2 r];
         end
@@ -185,8 +187,8 @@ for which = 1:5
         input_gen.cp = 3;
         Br.SetInputGen(input_gen);
     
-        for i = 1:numel(log.obj_log)
-        %for i = 1:10
+        %for i = 1:numel(log.obj_log)
+        for i = 1:500
             i
             u = log.X_log(:, i);
             
@@ -198,17 +200,17 @@ for which = 1:5
         
                 Br.SetParam({u1_sig},u(cpi+1));
                 Br.SetParam({u2_sig},u(cpi + 1+ input_gen.cp));
-                Br.SetParam({u2_sig},u(cpi + 1+ 2*input_gen.cp));
-                Br.SetParam({u2_sig},u(cpi + 1+ 3*input_gen.cp));
+                Br.SetParam({u3_sig},u(cpi + 1+ 2*input_gen.cp));
+                Br.SetParam({u4_sig},u(cpi + 1+ 3*input_gen.cp));
             end
     
-            Br.Sim(0:.01:5);
+            Br.Sim(0:.01:30);
             r = Br.CheckSpec(phi);
             if r<0
                 config
                 which
                 r
-                r = -r;
+                %r = -r;
             end
             rob2 = [rob2 r];
         end

@@ -34,7 +34,7 @@ function [logs, vars, ranges] = paramBreachSampling(br, budget, phi, tspan, inpu
 		end
 
     	falsif_pb.solve();
-		if falsif_pb.best_obj > 0
+		if min(falsif_pb.obj_log) > 0
 			break	
 		end
 	end

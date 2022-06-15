@@ -35,7 +35,7 @@ function [logs, vars, ranges] = randomSample(br, budget, phi, cp, tspan, input_n
         logs.X_log = [logs.X_log x_list'];
 
 
-        br.Sim(0:.01:30);
+        br.Sim(tspan);
         obj = br.CheckSpec(phi)
         logs.obj_log = [logs.obj_log obj];
 		vars = br.GetSysVariables();

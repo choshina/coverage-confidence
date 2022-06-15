@@ -1,9 +1,9 @@
 #!/bin/sh
 csv=$1
-matlab -nodesktop -nosplash <<EOF
+/home/zhenya/temp/bin/matlab -nodesktop -nosplash <<EOF
 clear;
-addpath(genpath('/home/zhenya/breach'));
-addpath(genpath('.'));
+addpath(genpath('/home/zhenya/tools/breach'));
+addpath(genpath('/home/zhenya/git/coverage-confidence'));
 InitBreach;
 
 warning('off', 'f16:no_analysis');
@@ -32,11 +32,16 @@ falsified_at_all = [];
 min_rob = [];
 coverage = [];
 time_cov = [];
-trials =5;
+trials = 5;
 
 for i = 1:trials
-	m = MCTS(B, N_max, scalar, phi, T, controlpoints, hill_climbing_by, T_playout, input_name, input_range, partitions);
-	log = m.log;
+	while true
+		m = MCTS(B, N_max, scalar, phi, T, controlpoints, hill_climbing_by, T_playout, input_name, input_range, partitions);
+		log = m.log;
+		if min(log.obj_log) > 0
+			break;
+		end
+	end
 	logname = strcat('test/log/F16_mcts_F1_1_500_20_cmaes_', int2str(i));
 	save(logname, 'log');
 end
