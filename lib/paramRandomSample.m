@@ -32,7 +32,7 @@ function [logs, vars, ranges] = paramRandomSample(br, budget, phi, tspan, input_
 %        end
 
         
-%        logs.X_log = [logs.X_log x_list'];
+       % logs.X_log = [logs.X_log x_list'];
 
 
         br.Sim(tspan);
