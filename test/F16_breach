@@ -1,6 +1,6 @@
 #!/bin/sh
 csv=$1
-matlab -nodesktop -nosplash <<EOF
+/home/zhenya/temp/bin/matlab -nodesktop -nosplash <<EOF
 clear;
 addpath(genpath('/home/zhenya/git/coverage-confidence/'));
 addpath(genpath('/home/zhenya/tools/breach/'));
@@ -38,7 +38,7 @@ coverage = [];
 time_cov = [];
 for n = 1:trials
 	logname = strcat('test/log/', filename, '_', int2str(n));
-	log = paramBreachSampling(B, budget, phi, controlpoints, tspan, input_name, input_range, solver);
+	log = paramBreachSampling(B, budget, phi, tspan, input_name, input_range, solver);
 	save(logname, 'log');
 end
 quit

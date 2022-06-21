@@ -6,14 +6,14 @@ addpath(genpath('/home/zhenya/tools/breach/'));
 addpath(genpath('/home/zhenya/git/coverage-confidence/'));
 %configuration
 %confs = {'AT1', 'AT3', 'AT4', 'AT5', 'AT6', 'AT7', 'AFC1', 'AFC2', 'NN1', 'FFR1'};
-confs= {'NN1'};
+confs= {'AT7'};
 
 for conf = confs
 config = conf{1};
 %config = 'NN1';
 go_on = true;
 
-for which = 1:5
+for which = 6:6
     model = get_model(config);
     logfile = strcat('log_falable/', config, 'R/', model ,'_random_', config, '_3_2000_', int2str(which) ,'.mat');
     
@@ -33,15 +33,15 @@ for which = 1:5
         if endsWith(config, '1')
             spec = 'alw_[0,30] (speed[t] < 130)';
         elseif endsWith(config, '3')
-            spec = 'alw_[0,29](speed[t]<100) or alw_[29,30](speed[t]>75)';
+            spec = 'alw_[0,29](speed[t]<100) or alw_[29,30](speed[t]>72)';
         elseif endsWith(config, '4')
             spec = 'alw_[0,30](RPM[t] < 4600 or alw_[0,1](RPM[t] > 1500))';
         elseif endsWith(config, '5')
             spec = 'alw_[0,30]((gear[t] == 3 => speed[t] > 19.8))';
         elseif endsWith(config, '6')
-            spec = 'alw_[0,30](speed[t]<130 and RPM[t] < 4800)';
+            spec = 'alw_[0,30](speed[t]<133 and RPM[t] < 4800)';
         elseif endsWith(config, '7')
-            spec = 'alw_[0,26](speed[t+4]-speed[t]>35 => gear[t+4]-gear[t]>0)';
+            spec = 'alw_[0,26](speed[t+4]-speed[t]>45 => gear[t+4]-gear[t]>0)';
         end
         
         rob2 = [];
@@ -67,7 +67,7 @@ for which = 1:5
     
             Br.Sim(0:.01:30);
             r = Br.CheckSpec(phi);
-            if r<0
+            if r<=0
                 config
                 which
                 r
@@ -118,7 +118,7 @@ for which = 1:5
                 Br.SetParam({ES_sig},u(cpi + 1+ input_gen.cp));
             end
     
-            Br.Sim(0:.01:50);
+            Br.Sim(0:.01:30);
             r = Br.CheckSpec(phi);
             if r<0
                 config
@@ -159,7 +159,7 @@ for which = 1:5
                 Br.SetParam({ref_sig},u(cpi+1));
             end
     
-            Br.Sim(0:.01:20);
+            Br.Sim(0:.01:30);
             r = Br.CheckSpec(phi);
             if r<0
                 config
@@ -200,11 +200,11 @@ for which = 1:5
         
                 Br.SetParam({u1_sig},u(cpi+1));
                 Br.SetParam({u2_sig},u(cpi + 1+ input_gen.cp));
-                Br.SetParam({u2_sig},u(cpi + 1+ 2*input_gen.cp));
-                Br.SetParam({u2_sig},u(cpi + 1+ 3*input_gen.cp));
+                Br.SetParam({u3_sig},u(cpi + 1+ 2*input_gen.cp));
+                Br.SetParam({u4_sig},u(cpi + 1+ 3*input_gen.cp));
             end
     
-            Br.Sim(0:.01:5);
+            Br.Sim(0:.01:30);
             r = Br.CheckSpec(phi);
             if r<0
                 config

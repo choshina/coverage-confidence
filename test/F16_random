@@ -1,10 +1,9 @@
 #!/bin/sh
 csv=$1
-matlab -nodesktop -nosplash <<EOF
+/home/zhenya/temp/bin/matlab -nodesktop -nosplash <<EOF
 clear;
-rmpath(genpath('/Users/zhenya/git/monitor_breach'));
-addpath(genpath('/Users/zhenya/git/coverage-confidence/'));
-addpath(genpath('/Users/zhenya/tools/breach/'));
+addpath(genpath('/home/zhenya/git/coverage-confidence/'));
+addpath(genpath('/home/zhenya/tools/breach/'));
 InitBreach;
  
 warning('off', 'f16:no_analysis'); 

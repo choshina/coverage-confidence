@@ -70,14 +70,15 @@ classdef State<handle
        %
        function [r,n, l] = reward(this, br, T, phi, solver, time_out)
            br.Sys.tspan = 0:.01:T;
-           input_gen.type = 'UniStep';
-           input_gen.cp = this.total_stage;
-           br.SetInputGen(input_gen);
-           
+	   if this.total_stage > 1
+           	input_gen.type = 'UniStep';
+           	input_gen.cp = this.total_stage;
+           	br.SetInputGen(input_gen);
+	   end
 
            for i = 1:this.total_stage
                for j = 1:numel(this.input_name)
-				   if this.total_state == 1
+				   if this.total_stage == 1
                    	br.SetParamRanges({this.input_name(j)}, this.input_region(i).get_signal(j));%to do
                    	br.SetParam({this.input_name(j)}, this.input_region(i).center(j))
 					  
