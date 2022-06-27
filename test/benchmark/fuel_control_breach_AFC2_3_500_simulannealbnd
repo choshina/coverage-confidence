@@ -1,0 +1,42 @@
+#!/bin/sh
+csv=$1
+matlab -nodesktop -nosplash <<EOF
+clear;
+addpath(genpath('/Users/zhenya/tools/breach/'));
+addpath(genpath('/Users/zhenya/git/coverage-confidence/'));
+InitBreach;
+
+fuel_inj_tol=1.0;
+MAF_sensor_tol=1.0;
+AF_sensor_tol=1.0;
+pump_tol=1;
+kappa_tol=1;
+tau_ww_tol=1;
+fault_time=50;
+kp=0.04;
+ki=0.14;
+mdl = 'fuel_control';
+Br = BreachSimulinkSystem(mdl);
+br = Br.copy();
+spec = 'not (ev_[11,50] (alw_[0,10] ((mu[t]>0.3) or (mu[t]<-0.3))))';
+phi = STL_Formula('phi',spec);
+tspan = 0:.01:50;
+controlpoints = 3;
+solver = 'simulannealbnd';
+input_name = {'Engine_Speed','Pedal_Angle'};
+input_range = [[900.0 1100.0];[8.8 90.0]];
+trials = 5;
+filename = 'fuel_control_breach_AFC2_3_500_simulannealbnd';
+specID = 'AFC2';
+algorithm = 'Breach';
+budget = 500;
+min_rob = [];
+coverage = [];
+time_cov = [];
+for n = 1:trials
+	logname = strcat('test/log/fuel_control_breach_AFC2_3_500_simulannealbnd_', int2str(n));
+	log = breachSampling(br, budget, phi, controlpoints, tspan, input_name, input_range, solver);
+	save(logname, 'log');
+end
+quit
+EOF
