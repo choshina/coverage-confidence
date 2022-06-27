@@ -34,7 +34,7 @@ function [logs, vars, ranges] = breachSampling(br, budget, phi, cp, tspan, input
 		end
 
     	falsif_pb.solve();
-		if falsif_pb.best_obj > 0
+		if falsif_pb.obj_best > 0
 			break	
 		end
 	end
