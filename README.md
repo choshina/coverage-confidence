@@ -136,3 +136,6 @@ bound 5                #size of test suites. You can test many: similarly to "ba
 path 1                 #the directory where logs are. All the logs in this directory will be computed.
 /Users/zhenya/git/coverage-confidence/test/log/AT1
 ```
+
+## Paper
+T. Takisaka, Z. Zhang, P. Arcaini and I. Hasuo. A Robustness-Based Confidence Measure for Hybrid System Falsification. In IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems, 2022 [[doi](https://ieeexplore.ieee.org/document/9867937)]
